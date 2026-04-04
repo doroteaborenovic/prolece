@@ -1,0 +1,51 @@
+grammar Expr;
+
+program
+    :  expr EOF
+    ;
+
+expr : selectExpr    
+    (joinExpr)*
+    ;
+
+selectExpr
+    : SELECT ( OP | selectList) 
+        fromExpr SEMI
+    ;
+selectList
+    : selectItem (COMMA selectItem)*
+    ;
+
+selectItem
+    : table_name DOT column   
+    | table_name DOT OP      
+    | table_name            
+    ;
+
+fromExpr: FROM table_name;
+
+joinExpr: JOIN table_name ON 
+         stat;
+
+table_name: ID;
+column: ID; 
+
+
+EQ     : '=';
+DOT    : '.';
+COMMA  : ',';
+SEMI   : ';';
+OP     : '*';
+
+SELECT : 'SELECT';
+FROM   : 'FROM';
+JOIN   : 'JOIN';
+ON     : 'ON';
+
+stat: table_name DOT column EQ table_name DOT column;
+
+ID: [a-zA-Z_][a-zA-Z_0-9]*;
+INT: [0-9]+;
+WS
+    : [ \t\r\n]+ -> skip
+    ;
