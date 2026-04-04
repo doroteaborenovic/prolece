@@ -5,12 +5,12 @@ program
     ;
 
 expr : selectExpr    
-    (joinExpr)*
+        (selectExpr)*
     ;
 
 selectExpr
     : SELECT ( OP | selectList) 
-        fromExpr SEMI
+        fromExpr (joinExpr)? SEMI 
     ;
 selectList
     : selectItem (COMMA selectItem)*
@@ -48,4 +48,4 @@ ID: [a-zA-Z_][a-zA-Z_0-9]*;
 INT: [0-9]+;
 WS
     : [ \t\r\n]+ -> skip
-    ;
+    ; 
