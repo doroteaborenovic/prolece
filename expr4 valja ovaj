@@ -1,0 +1,95 @@
+grammar Expr;
+
+program
+    :  expr EOF
+    ;
+
+expr : (selectExpr SEMI)+
+    ;
+
+selectExpr:   
+        SELECT ( OP | selectList) 
+        fromList
+        ( joinExpr | whereExpr )*
+        
+    ;
+selectList
+    : selectItem (COMMA selectItem)*
+    ;
+
+selectItem
+    : table_name DOT column
+    | table_name DOT OP
+    | table_name
+    ;
+
+whereExpr
+    :WHERE condition
+    ;
+    
+joinExpr: JOIN table_name ON stat ;
+
+fromExpr: table_name (ID)*;
+
+fromList:
+    FROM fromExpr (COMMA fromExpr)*
+    ;
+
+condition
+    : NOT condition                # notCond
+    | condition AND condition      # andCond
+    | condition OR condition       # orCond
+    | Lzagrada condition Dzagrada  # parenCond
+    | tacnost                      # equalityCond
+    ;
+tacnost
+    : term uporedi term            # uporedjivanje
+    | term IS NULL                 # isNullProvera
+    ;
+term
+    : INT                          # intVal
+    | STRING                       # stringVal
+    | table_name DOT column        # fullColumnVal
+    | column                       # simpleColumnVal
+    ;
+
+table_name : ID ;
+column     : ID ;
+
+uporedi
+    : EQ | NEQ | LT | GT | LTE | GTE
+    ;
+
+stat: table_name DOT column EQ table_name DOT column ;
+
+EQ     : '=';
+NEQ    : '!=';
+LT     : '<';
+GT     : '>';
+LTE    : '<=';
+GTE    : '>=';
+DOT    : '.';
+COMMA  : ',';
+SEMI   : ';';
+OP     : '*';
+
+SELECT : 'SELECT';
+FROM   : 'FROM';
+JOIN   : 'JOIN';
+ON     : 'ON';
+WHERE  : 'WHERE';
+NOT    : 'NOT';
+AND    : 'AND';
+OR     : 'OR';
+IS     : 'IS';
+NULL   : 'NULL';
+Lzagrada: '(';
+Dzagrada: ')';
+
+INT :[0-9]+;
+ID     : [a-zA-Z][a-zA-Z0-9_]*;
+STRING : '"' ( ~["] | '\\' . )* '"' ;
+
+WS
+    : [ \t\r\n]+ -> skip
+    ;
